@@ -5,24 +5,24 @@
 
 namespace Operations {
 
-    template <class T, class N>
-    class Operation {
-    protected:
-        Primitives::Matrix <T> mat;
-        Primitives::Kernel <N> ker;
+	template <class T, class N>
+	class Operation {
+	protected:
+		Primitives::Matrix <T> mat;
+		Primitives::Kernel <N> ker;
 
-    public:
-        Operation(Primitives::Matrix<T> _mat, Primitives::Kernel<N> _ker);
-        Operation();
-    };
+	public:
+		Operation(Primitives::Matrix<T> _mat, Primitives::Kernel<N> _ker);
+		Operation();
+	};
 
-    template <class T, class N>
+	template <class T, class N>
 	class Convolution: public Operation <T, N>{
-    private:
-        std::vector<std::vector <T>> Compute();
-    public:
-        Convolution(Primitives::Matrix<T> _mat, Primitives::Kernel<N> _ker);
-    };
+	private:
+		std::vector<std::vector <T>> Compute();
+	public:
+		Convolution(Primitives::Matrix<T> _mat, Primitives::Kernel<N> _ker);
+	};
 }
 
 // Have the implementation in the same header so theres
@@ -84,6 +84,7 @@ std::vector<std::vector <T>> Operations::Convolution <T,N>::Compute() {
 									this->ker.getValues()[0][2] * this->mat.getValues()[matX-1][matY+1] +
 									this->ker.getValues()[1][2] * this->mat.getValues()[matX][matY+1] +
 									this->ker.getValues()[2][2] * this->mat.getValues()[matX+1][matY+1];
+
 			output[matX][matY] /= this->ker.getXsize() * this->ker.getYsize();
 		}
 	}

@@ -1,4 +1,3 @@
-// #include <vector>
 #include <stdio.h>
 #include <iomanip>
 #include <stdlib.h>
@@ -74,18 +73,21 @@ int main(int argc, char **argv)
 {
 	std::cout << std::setprecision(3);
 
-	Primitives::Matrix<int> m(6);
+	Primitives::Matrix<float> m(6);
+
+	// TODO: only 3x3 kernel works with current conv
 	Primitives::Kernel<float> k(3);
 
-	m.populateRand(1, 5);
-	k.populateRand(0, 4);
+	// TODO: when int tensors are given the same lower and upper range it segfaults
+	m.populateRand(1, 2);
+	k.populateRand(1, 1);
 
 	m.printValues();
 	std::cout<<std::endl;
 	k.printValues();
 	std::cout<<std::endl;
 
-	Operations::Convolution<int, float> op(m, k);
+	Operations::Convolution<float, float> op(m, k);
 	// next milestone
 	// Primitives::Matrix<float> m2 = m + k;
 	// m2.printValues();

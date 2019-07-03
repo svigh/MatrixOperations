@@ -8,54 +8,54 @@
 
 namespace Primitives {
 
-    template <class T>
-    class Tensor{
-    protected:
-        int sizeX, sizeY;
-        int strideX, strideY;
+	template <class T>
+	class Tensor{
+	protected:
+		int sizeX, sizeY;
+		int strideX, strideY;
 #if PTR_ARRAYS	//This thing breaks the C++11 range-based fors. Make a pointer the entire size of the matrix for faster cache hits.
-        T** values;
+		T** values;
 #else
-        std::vector< std::vector<T>> values;
+		std::vector< std::vector<T>> values;
 #endif
 
-        void allocateSize();
+		void allocateSize();
 
-    public:
-        ~Tensor();
-        Tensor(int _sizeX, int _sizeY);
-        Tensor(int _size);
-        Tensor();
+	public:
+		~Tensor();
+		Tensor(int _sizeX, int _sizeY);
+		Tensor(int _size);
+		Tensor();
 
-        std::vector< std::vector <T>> getValues();
+		std::vector< std::vector <T>> getValues();
 
-        void printValues();
+		void printValues();
 
-        void populateRand(T lowerLimit, T upperLimit);
+		void populateRand(T lowerLimit, T upperLimit);
 
-        int getXsize();
-        int getYsize();
+		int getXsize();
+		int getYsize();
 
-    };
+	};
 
 	template <class T>
 	class Kernel: public Tensor <T>{
-    public:
-        ~Kernel();
-        Kernel(int _sizeX, int _sizeY);
-        Kernel(int _size);
-        Kernel();
-    };
+	public:
+		~Kernel();
+		Kernel(int _sizeX, int _sizeY);
+		Kernel(int _size);
+		Kernel();
+	};
 
 	template <class T>
 	class Matrix: public Tensor <T>{
-    public:
-        ~Matrix();
-        Matrix(int _sizeX, int _sizeY);
-        Matrix(int _size);
-        Matrix();
+	public:
+		~Matrix();
+		Matrix(int _sizeX, int _sizeY);
+		Matrix(int _size);
+		Matrix();
 
-    };
+	};
 }
 
 // Have the implementation in the same header so theres
@@ -86,10 +86,10 @@ void Primitives::Tensor<T>::allocateSize() {
 template <class T>
 Primitives::Tensor<T>::~Tensor() {
 #if PTR_ARRAYS
-            for(int i = 0; i < sizeX; ++i){
-                delete[] values[i];
-            }
-            delete[] values;
+			for(int i = 0; i < sizeX; ++i){
+				delete[] values[i];
+			}
+			delete[] values;
 #else
 			// How to free memory of a vector ??
 #endif
