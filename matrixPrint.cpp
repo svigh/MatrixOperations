@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <iomanip>
 #include <stdlib.h>
-#include <iostream>
 
 #include "primitives.h"
 #include "operations.h"
