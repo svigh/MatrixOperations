@@ -1,60 +1,63 @@
-#ifndef __PRIMITIVES_H__
-#define __PRIMITIVES_H__
+#pragma once
 
 #include <vector>
 #include <iostream>
+#include "helpers.h"
 
 #define PTR_ARRAYS 0
 
+// TODO: have all tensors be just vectors of elements, not matrices
 namespace Primitives {
 
-	template <class T>
+	template <typename T>
 	class Tensor{
 	protected:
-		int sizeX, sizeY;
-		int strideX, strideY;
+		unsigned int sizeX, sizeY;
+		unsigned int strideX, strideY;
 #if PTR_ARRAYS	//This thing breaks the C++11 range-based fors. Make a pointer the entire size of the matrix for faster cache hits.
 		T** values;
 #else
-		std::vector< std::vector<T>> values;
+		std::vector<T> values;
 #endif
 
 		void allocateSize();
 
 	public:
 		~Tensor();
-		Tensor(int _sizeX, int _sizeY);
-		Tensor(int _size);
+		Tensor(unsigned int _sizeX, unsigned int _sizeY);
+		Tensor(unsigned int _size);
 		Tensor();
 
-		std::vector< std::vector <T>> getValues();
+		std::vector <T> getValues();
 
 		void printValues();
 
 		void populateRand(T lowerLimit, T upperLimit);
 
-		int getXsize();
-		int getYsize();
+		unsigned int getXsize();
+		unsigned int getYsize();
+
+		T &operator[](unsigned int index);
+		Tensor &operator = (const Tensor& t);
 
 	};
 
-	template <class T>
+	template <typename T>
 	class Kernel: public Tensor <T>{
 	public:
 		~Kernel();
-		Kernel(int _sizeX, int _sizeY);
-		Kernel(int _size);
+		Kernel(unsigned int _sizeX, unsigned int _sizeY);
+		Kernel(unsigned int _size);
 		Kernel();
 	};
 
-	template <class T>
+	template <typename T>
 	class Matrix: public Tensor <T>{
 	public:
 		~Matrix();
-		Matrix(int _sizeX, int _sizeY);
-		Matrix(int _size);
+		Matrix(unsigned int _sizeX, unsigned int _sizeY);
+		Matrix(unsigned int _size);
 		Matrix();
-
 	};
 }
 
@@ -66,27 +69,23 @@ namespace Primitives {
 // template class Primitives::Kernel<float>;
 // template class Primitives::Matrix<int>;
 
-template <class T>
+template <typename T>
 void Primitives::Tensor<T>::allocateSize() {
 #if PTR_ARRAYS
 		values = new T*[sizeX];
-		for(int i = 0; i < sizeX; ++i)
+		for(unsigned int i = 0; i < sizeX; ++i)
 		{
 			values[i] = new T[sizeY];
 		}
 #else
-		values.resize(sizeX);
-		for(int i = 0; i < sizeX; ++i)
-		{
-			values[i].resize(sizeY);
-		}
+		values.resize(sizeX * sizeY);
 #endif
 }
 
-template <class T>
+template <typename T>
 Primitives::Tensor<T>::~Tensor() {
 #if PTR_ARRAYS
-			for(int i = 0; i < sizeX; ++i){
+			for(unsigned int i = 0; i < sizeX; ++i){
 				delete[] values[i];
 			}
 			delete[] values;
@@ -95,81 +94,101 @@ Primitives::Tensor<T>::~Tensor() {
 #endif
 }
 
-template <class T>
-Primitives::Tensor<T>::Tensor(int _sizeX, int _sizeY): sizeX(_sizeX), sizeY(_sizeY) {
+template <typename T>
+Primitives::Tensor<T>::Tensor(unsigned int _sizeX, unsigned int _sizeY): sizeX(_sizeX), sizeY(_sizeY) {
 	allocateSize();
 }
 
-template <class T>
-Primitives::Tensor<T>::Tensor(int _size): sizeX(_size), sizeY(_size) {
+template <typename T>
+Primitives::Tensor<T>::Tensor(unsigned int _size): sizeX(_size), sizeY(_size) {
 	allocateSize();
 }
 
-template <class T>
+template <typename T>
 Primitives::Tensor<T>::Tensor(): sizeX(1), sizeY(1) {
 	allocateSize();
 }
 
-template <class T>
-std::vector< std::vector <T>> Primitives::Tensor<T>::getValues(){
+template <typename T>
+T &Primitives::Tensor<T>::operator[](unsigned int index){
+	if ( index > (sizeX * sizeY) ){
+		std::cout << "Index out of bounds" << std::endl;
+		return values[0];
+	}
+
+	return values[index];
+}
+
+template <typename T>
+Primitives::Tensor<T> &Primitives::Tensor<T>::operator=(const Primitives::Tensor<T>& t){
+
+	auto tensorSize = t.sizeX * t.sizeY;
+
+	values.resize(tensorSize);
+
+	for( unsigned int i = 0; i < tensorSize; ++i){
+		values[i] = t[i];
+	}
+}
+
+template <typename T>
+std::vector <T> Primitives::Tensor<T>::getValues(){
 	return values;
 }
 
-template <class T>
+template <typename T>
 void Primitives::Tensor<T>::printValues(){
-	for(auto &col : values)
+	unsigned int i = 0;
+
+	for(T &elem : values)
 	{
-		for(T &elem : col)
-		{
-			std::cout<<elem<<"\t";
+		std::cout<<elem<<"\t";
+
+		if( !(++i % sizeY) ){
+			std::cout<<std::endl;
 		}
-		std::cout<<std::endl;
 	}
 }
 
-template <class T>
+template <typename T>
 void Primitives::Tensor<T>::populateRand(T lowerLimit, T upperLimit){
-	for(auto &col : values)
+	for(T &elem : values)
 	{
-		for(T &elem : col)
-		{
-			elem = lowerLimit + static_cast <float> (rand()) / (static_cast <float>(RAND_MAX/(upperLimit-lowerLimit))); // static cast for generating float numbers
-		}
+		// static cast for generating float numbers not needed ?? also +1 to get [low, high] interval
+		elem = lowerLimit + static_cast <float> (rand()) / (static_cast <float>(RAND_MAX/(upperLimit-lowerLimit+1)));
 	}
 }
 
-template <class T>
-int Primitives::Tensor<T>::getXsize(){
+template <typename T>
+unsigned int Primitives::Tensor<T>::getXsize(){
 	return sizeX;
 }
 
-template <class T>
-int Primitives::Tensor<T>::getYsize(){
+template <typename T>
+unsigned int Primitives::Tensor<T>::getYsize(){
 	return sizeY;
 }
 
-template <class T>
+template <typename T>
 Primitives::Kernel<T>::~Kernel() {}
 
-template <class T>
-Primitives::Kernel<T>::Kernel(int _sizeX, int _sizeY) : Tensor <T> (_sizeX, _sizeY) {}
+template <typename T>
+Primitives::Kernel<T>::Kernel(unsigned int _sizeX, unsigned int _sizeY) : Tensor <T> (_sizeX, _sizeY) {}
 
-template <class T>
-Primitives::Kernel<T>::Kernel(int _size) : Tensor <T> (_size) {}
+template <typename T>
+Primitives::Kernel<T>::Kernel(unsigned int _size) : Tensor <T> (_size) {}
 
-template <class T>
+template <typename T>
 Primitives::Kernel<T>::Kernel() : Tensor <T> () {}
 
-template <class T>
+template <typename T>
 Primitives::Matrix<T>::~Matrix() {}
 
-template <class T>
-Primitives::Matrix<T>::Matrix(int _sizeX, int _sizeY) : Tensor <T> (_sizeX, _sizeY) {}
+template <typename T>
+Primitives::Matrix<T>::Matrix(unsigned int _sizeX, unsigned int _sizeY) : Tensor <T> (_sizeX, _sizeY) {}
 
-template <class T>
-Primitives::Matrix<T>::Matrix(int _size) : Tensor <T> (_size) {}
+template <typename T>
+Primitives::Matrix<T>::Matrix(unsigned int _size) : Tensor <T> (_size) {}
 
-template <class T>
+template <typename T>
 Primitives::Matrix<T>::Matrix() : Tensor <T> () {}
-
-#endif
