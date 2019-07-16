@@ -2,8 +2,9 @@
 #include <iomanip>
 #include <stdlib.h>
 
-#include "primitives.h"
-#include "operations.h"
+#include "Types/Matrix.h"
+#include "Types/Kernel.h"
+#include "Operations/BitwiseProduct.h"
 
 // virtual function
 // friend classes
@@ -15,27 +16,26 @@
 
 int main()
 {
-	// fixed says that there will be a fixed number of decimal digits after the decimal point
+	// 'fixed' says that there will be a fixed number of decimal digits after the decimal point
 	std::cout << std::fixed << std::setprecision(2);
 
-	Primitives::Matrix<float> m(10);
+	Matrix<int> m(10);
 
-	// TODO: only 3x3 kernel works with current conv
-	Primitives::Kernel<int> k(4);
+	Kernel<int> k(10);
 
 	// TODO: when int tensors are given the same lower and upper range it segfaults
-	m.populateRand(1, 1245);
-	k.populateRand(1, 1233);
+	m.populateRand(1, 12);
+	k.populateRand(1, 13);
 
 	m.printValues();
 	std::cout<<std::endl;
 	k.printValues();
 	std::cout<<std::endl;
 
-	Operations::Convolution <float, int> op(m, k);
+	BitwiseProduct <int, int> op(m, k);
 
 	// next milestone
-	// Primitives::Matrix<float> m2 = m + k;
+	// Matrix<float> m2 = m + k;
 	// m2.printValues();
 
 	return 0;
