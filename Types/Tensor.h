@@ -125,10 +125,16 @@ void Tensor<T>::printValues(){
 
 template <typename T>
 void Tensor<T>::populateRand(T lowerLimit, T upperLimit){
-	for(T &elem : values)
-	{
-		// static cast for generating float numbers not needed ?? also +1 to get [low, high] interval
-		elem = lowerLimit + static_cast <float> (rand()) / (static_cast <float>(RAND_MAX/(upperLimit-lowerLimit+1)));
+	if( lowerLimit == upperLimit ) {
+		for(T &elem : values) {
+			elem = upperLimit;
+		}
+	}else{
+		for(T &elem : values)
+		{
+			// static cast for generating float numbers not needed ?? also +1 to get [low, high] interval
+			elem = lowerLimit + static_cast <float> (rand()) / (static_cast <float>(RAND_MAX/(upperLimit-lowerLimit+1)));
+		}
 	}
 }
 
