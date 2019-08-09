@@ -3,7 +3,7 @@
 #include "Tensor.h"
 
 template <typename T>
-class Kernel: public Tensor <T>{
+class Kernel : public Tensor <T>{
 	public:
 		~Kernel();
 		Kernel(unsigned int _sizeX, unsigned int _sizeY);

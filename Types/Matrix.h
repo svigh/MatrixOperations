@@ -3,7 +3,7 @@
 #include "Tensor.h"
 
 template <typename T>
-class Matrix: public Tensor <T>{
+class Matrix : public Tensor <T>{
 	public:
 		~Matrix();
 		Matrix(unsigned int _sizeX, unsigned int _sizeY);

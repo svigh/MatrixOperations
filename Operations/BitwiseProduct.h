@@ -1,11 +1,11 @@
 #include "Operation.h"
 
 template <typename T, typename N>
-	class BitwiseProduct: public Operation <T, N>{
+	class BitwiseProduct : public Operation <T, N>{
 	private:
 		Tensor<T> Compute();
 	public:
-	BitwiseProduct(Matrix<T> _mat, Kernel<N> _ker);
+		BitwiseProduct(Matrix<T> _mat, Kernel<N> _ker);
 };
 
 template <typename T, typename N>
@@ -37,7 +37,6 @@ Tensor<T> BitwiseProduct <T,N>::Compute() {
 
 	Tensor<T> output(outX, outY);
 
-	// This aint conv chief, keep it till it good
 	for(unsigned int matIndex = 0; matIndex < matLimit; ++matIndex){
 		output[matIndex] = this->ker[ matIndex % (this->ker.getXsize() * this->ker.getXsize()) ] * this->mat[matIndex];
 	}
